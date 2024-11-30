@@ -86,7 +86,7 @@ function handleQuery(inputText) {
         userInput.includes(condition)
     );
 
-    messages.innerHTML += `
+    messages.innerHTML += ` 
         <div class="message user-message">
             <strong>You:</strong> ${userInput}
         </div>
@@ -120,7 +120,6 @@ function handleQuery(inputText) {
     document.getElementById("user-input").value = "";
 }
 
-
 function startVoiceInput() {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = "en-US";
@@ -141,3 +140,6 @@ document.getElementById("user-input").addEventListener("keypress", function (e) 
         handleQuery(inputText);
     }
 });
+function clearChat() {
+    document.getElementById("messages").innerHTML = "";
+}
