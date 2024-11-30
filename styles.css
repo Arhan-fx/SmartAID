@@ -1,3 +1,4 @@
+
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -6,7 +7,7 @@ body {
     height: 100vh;
     margin: 0;
     background-color: #f0f0f0;
-} 
+}
 
 .container {
     background-color: white;
@@ -21,6 +22,7 @@ h1 {
     text-align: center;
 }
 
+
 #chatbox {
     margin-top: 20px;
 }
@@ -31,10 +33,14 @@ h1 {
     border: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
 }
 
 .message {
     margin-bottom: 15px;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
 }
 
 .user-message {
@@ -49,20 +55,30 @@ h1 {
     margin-left: 50px;
 }
 
-.bot-message img {
-    max-width: 80px;
-    margin-top: 10px;
+
+#user-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+
+#button-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 button {
-    width: 100%;
+    flex: 1;
     padding: 10px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-top: 5px;
 }
 
 button:hover {
@@ -77,10 +93,24 @@ button:hover {
     background-color: #e60000;
 }
 
-input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+
+#mic-button {
+    background-color: #28a745;
+    color: white;
+}
+
+#mic-button:hover {
+    background-color: #218838;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
