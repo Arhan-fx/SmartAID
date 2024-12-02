@@ -3,22 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartAid</title>
+    <title>SmartAID Chatbox</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>SmartAid</h1>
-        <div id="chatbox">
-            <div id="messages"></div>
-            <input type="text" id="user-input" placeholder="Describe your emergency (e.g., 'I'm bleeding')" />
-            <div id="button-wrapper">
-                <button onclick="handleQuery()">Send</button>
-                <button class="clear" onclick="clearChat()">Clear Chat History</button>
-                <button id="mic-button" onclick="startVoiceInput()">🎤 Voice Input</button>
-            </div>
+    <div class="chat-container">
+        <div class="chat-header">SmartAID Chat</div>
+        <div class="chat-box" id="chatBox">
+             
         </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type your message...">
+            <button id="sendBtn">Send</button>
+            <button id="voiceBtn">Voice</button>
+        </div>
+        <button id="clearHistoryBtn" class="clear-btn">Clear History</button>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+        if (recognition) {
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            voiceBtn.addEventListener('click', () => {
+                voiceBtn.textContent = "Listening...";
+                recognition.start();
+            });
+
+            recognition.addEventListener('result', (event) => {
+                const transcript = event.results[0][0].transcript;
+                messageInput.value = transcript;
+
+               
+                sendMessage();
+            });
+
+            recognition.addEventListener('end', () => {
+                voiceBtn.textContent = "Voice";
+            });
+
+            recognition.addEventListener('error', (event) => {
+                alert('Voice recognition error: ' + event.error);
+                voiceBtn.textContent = "Voice";
+            });
+        } else {
+            voiceBtn.addEventListener('click', () => {
+                alert("Voice-to-text is not supported in this browser.");
+            });
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') sendMessage();
+        });
+        clearHistoryBtn.addEventListener('click', clearChat);
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+             
+            const userMessage = document.createElement('div');
+            userMessage.classList.add('message', 'user');
+            userMessage.innerHTML = `
+                <span class="message-content">${message}</span>
+                <span class="timestamp">${formatTimestamp()}</span>
+            `;
+            chatBox.appendChild(userMessage);
+
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            
+            messageInput.value = '';
+
+             
+            fetch('http://localhost:5000/generate-recipe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message })
+            })
+                .then(response => response.json())
+                .then(data => {
+                     
+                    const aiMessage = document.createElement('div');
+                    aiMessage.classList.add('message', 'ai');
+                    aiMessage.innerHTML = `
+                        <span class="message-content">${data.response}</span>
+                        <span class="timestamp">${formatTimestamp()} - SmartAID</span>
+                    `;
+                    chatBox.appendChild(aiMessage);
+
+                      
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function clearChat() {
+            chatBox.innerHTML = '';
+        }
+
+        function formatTimestamp() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+    </script>
 </body>
 </html>
