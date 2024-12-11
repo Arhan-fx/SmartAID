@@ -6,7 +6,7 @@ app = Flask(__name__)
  
 CORS(app)
  
-client = Groq(api_key="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")
+client = Groq(api_key="YOUR API KEY")
 
 @app.route('/generate-recipe', methods=['POST'])
 def generate_recipe():
